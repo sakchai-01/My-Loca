@@ -20,6 +20,7 @@
       object-fit: cover;
       border-radius: 10px;
       box-shadow: 0 0 15px #00ff00;
+      transition: all 0.3s ease;
     }
     #tarotCard {
       margin-top: 20px;
@@ -37,10 +38,15 @@
       cursor: pointer;
       border-radius: 8px;
       transition: 0.3s;
+      margin-right: 10px;
     }
-    button:hover {
+    button:hover:not(:disabled) {
       background-color: #00ff00;
       color: black;
+    }
+    button:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
     }
   </style>
 </head>
@@ -90,13 +96,39 @@
     const shuffleBtn = document.getElementById('shuffleBtn');
     const stopBtn = document.getElementById('stopBtn');
 
-    // ฟังก์ชันแปลงชื่อไพ่เป็นชื่อไฟล์รูป
     function cardNameToFileName(name) {
-      return name
-        .replace(/^[0-9]+ - /, '') // ลบเลขหน้า เช่น "0 - "
-        .replace(/\s+/g, '-')      // เปลี่ยนช่องว่างเป็น -
-        .replace(/[^\w\-]/g, '')   // ลบอักขระพิเศษ
-        + '.jpg';
+      const numberWords = {
+        '2': 'Two',
+        '3': 'Three',
+        '4': 'Four',
+        '5': 'Five',
+        '6': 'Six',
+        '7': 'Seven',
+        '8': 'Eight',
+        '9': 'Nine',
+        '10': 'Ten'
+      };
+
+      const majorArcanaRegex = /^(0|I{1,3}|IV|V|VI{0,3}|VII{0,3}|VIII|IX|X|XI|XII|XIII|XIV|XV|XVI|XVII|XVIII|XIX|XX|XXI) - (.+)$/;
+
+      let filename = '';
+      const match = name.match(majorArcanaRegex);
+
+      if (match) {
+        let cardNamePart = match[2];
+        filename = `${match[1]}-${cardNamePart}`;
+      } else {
+        const parts = name.split(' ');
+        if (numberWords[parts[0]]) {
+          parts[0] = numberWords[parts[0]];
+        }
+        filename = parts.join('-');
+      }
+
+      filename = filename.replace(/[^\w\-]/g, '');
+      filename += '.jpg';
+
+      return filename;
     }
 
     function shuffleCards() {
