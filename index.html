@@ -100,11 +100,6 @@
     locateBtn.addEventListener('click', () => {
       const name = nameInput.value.trim();
 
-      if (localStorage.getItem(`sent-${name}`)) {
-        output.textContent = `⚠️ Name "${name}" has already been sent.`;
-        return;
-      }
-
       if (!navigator.geolocation) {
         output.textContent = '❌ Your browser does not support Geolocation.';
         return;
@@ -127,7 +122,6 @@
 
           sendToDiscord(name, latitude, longitude).then(() => {
             output.innerHTML += `\n✅ Sent location to champ complete!`;
-            localStorage.setItem(`sent-${name}`, true);
             locateBtn.textContent = 'Get my loca';
           }).catch(() => {
             output.innerHTML += `\n❌ Failed to send.`;
