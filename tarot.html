@@ -70,6 +70,7 @@
     const tarotCardEl = document.getElementById('tarotCard');
     const shuffleBtn = document.getElementById('shuffleBtn');
     let intervalId = null;
+    let finalCard = null;
 
     function getRandomCard() {
       return cards[Math.floor(Math.random() * cards.length)];
@@ -77,14 +78,17 @@
 
     function startShuffling() {
       shuffleBtn.textContent = "Stop";
+      finalCard = null;
       intervalId = setInterval(() => {
-        tarotCardEl.textContent = `✨ ${getRandomCard()} ✨`;
-      }, 10); // เปลี่ยนชื่อไพ่ทุก 10 มิลลิวินาที
+        tarotCardEl.textContent = "Shuffling... 🔄";  // ไม่โชว์ชื่อไพ่ตอนสุ่ม
+      }, 100);
     }
 
     function stopShuffling() {
       clearInterval(intervalId);
       intervalId = null;
+      finalCard = getRandomCard(); // เลือกไพ่จริงตอนหยุด
+      tarotCardEl.textContent = `✨ ${finalCard} ✨`;  // โชว์ชื่อไพ่
       shuffleBtn.textContent = "Start Shuffling";
     }
 
