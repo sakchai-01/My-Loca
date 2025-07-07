@@ -31,17 +31,29 @@
       text-shadow: 0 0 10px #0f0;
       min-height: 2.5em;
     }
-    #cardImage {
+    .card-container {
       margin-top: 20px;
       width: 200px;
       height: 320px;
+      margin-left: auto;
+      margin-right: auto;
+      perspective: 1000px;
+    }
+    #cardImage {
+      width: 100%;
+      height: 100%;
       object-fit: cover;
       border-radius: 10px;
       box-shadow: 0 0 15px #00ff00;
-      transition: all 0.3s ease;
-      display: block;
-      margin-left: auto;
-      margin-right: auto;
+      transition: transform 1s ease, opacity 1s ease;
+      transform-style: preserve-3d;
+    }
+    .rotating {
+      animation: spin 1s linear infinite;
+    }
+    @keyframes spin {
+      0% { transform: rotateY(0deg); }
+      100% { transform: rotateY(360deg); }
     }
   </style>
 </head>
@@ -51,7 +63,9 @@
 
   <button id="shuffleBtn">Start Shuffling</button>
   <div id="tarotCard">Ready to shuffle?</div>
-  <img id="cardImage" src="images/card-back.jpg" alt="Card Back" />
+  <div class="card-container">
+    <img id="cardImage" src="images/card-back.png" alt="Card Back" />
+  </div>
 
   <script>
     const cards = [
@@ -89,64 +103,50 @@
 
     function cardNameToFileName(name) {
       const numberWords = {
-        '2': 'Two',
-        '3': 'Three',
-        '4': 'Four',
-        '5': 'Five',
-        '6': 'Six',
-        '7': 'Seven',
-        '8': 'Eight',
-        '9': 'Nine',
-        '10': 'Ten'
+        '2': 'Two', '3': 'Three', '4': 'Four', '5': 'Five', '6': 'Six',
+        '7': 'Seven', '8': 'Eight', '9': 'Nine', '10': 'Ten'
       };
 
       const majorArcanaRegex = /^(0|I{1,3}|IV|V|VI{0,3}|VII{0,3}|VIII|IX|X|XI|XII|XIII|XIV|XV|XVI|XVII|XVIII|XIX|XX|XXI) - (.+)$/;
-
-      let filename = '';
       const match = name.match(majorArcanaRegex);
 
+      let filename;
       if (match) {
-        // Major Arcana ใช้เลขโรมัน/เลขศูนย์หน้า-ชื่อ
-        let cardNamePart = match[2];
-        filename = `${match[1]}-${cardNamePart}`;
+        filename = `${match[1]}-${match[2]}`;
       } else {
-        // ไพ่ดอก (Minor Arcana) แปลงเลขเป็นคำเต็ม
         const parts = name.split(' ');
-        if (numberWords[parts[0]]) {
-          parts[0] = numberWords[parts[0]];
-        }
+        if (numberWords[parts[0]]) parts[0] = numberWords[parts[0]];
         filename = parts.join('-');
       }
 
-      filename = filename.replace(/[^\w\-]/g, '');
-      filename += '.jpg';
-
-      return filename;
+      return filename.replace(/[^\w\-]/g, '') + '.jpg';
     }
 
     function shuffleCards() {
-      currentIndex = (currentIndex + 1) % cards.length;
-      tarotCard.textContent = '🔒';          // ซ่อนชื่อไพ่
-      cardImage.src = 'images/card-back.png'; // แสดงภาพไพ่ปิด
+      currentIndex = Math.floor(Math.random() * cards.length);
+      tarotCard.textContent = '🔒';
+      cardImage.classList.add('rotating');
+      cardImage.src = 'images/card-back.png';
     }
 
     function startShuffle() {
       shuffling = true;
       shuffleBtn.textContent = 'Stop & Reveal';
-      intervalId = setInterval(() => {
-        currentIndex = Math.floor(Math.random() * cards.length);
-        shuffleCards();
-      }, 100);
+      intervalId = setInterval(shuffleCards, 100);
     }
 
     function stopShuffle() {
-      shuffling = false;
       clearInterval(intervalId);
+      shuffling = false;
       shuffleBtn.textContent = 'Start Shuffling';
-
       const selectedCard = cards[currentIndex];
       tarotCard.textContent = `✨ ${selectedCard} ✨`;
-      cardImage.src = 'images/' + cardNameToFileName(selectedCard);
+
+      // หมุนเสร็จแล้วเปลี่ยนภาพ
+      setTimeout(() => {
+        cardImage.classList.remove('rotating');
+        cardImage.src = 'images/' + cardNameToFileName(selectedCard);
+      }, 500);
     }
 
     shuffleBtn.addEventListener('click', () => {
