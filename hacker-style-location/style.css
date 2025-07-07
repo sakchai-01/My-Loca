@@ -1,0 +1,45 @@
+body {
+  background-color: black;
+  color: #00ff00;
+  font-family: 'Courier New', monospace;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  margin: 0;
+}
+
+.container {
+  text-align: center;
+  animation: flicker 1.5s infinite alternate;
+}
+
+.title {
+  font-size: 24px;
+  margin-bottom: 20px;
+}
+
+button {
+  background-color: transparent;
+  border: 2px solid #00ff00;
+  color: #00ff00;
+  padding: 10px 30px;
+  font-size: 16px;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+button:hover {
+  background-color: #00ff00;
+  color: black;
+}
+
+#output {
+  margin-top: 20px;
+  font-size: 14px;
+}
+
+@keyframes flicker {
+  0% { opacity: 1; }
+  100% { opacity: 0.95; }
+}
