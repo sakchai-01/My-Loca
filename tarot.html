@@ -49,7 +49,7 @@
       transform-style: preserve-3d;
     }
     .rotating {
-      animation: spin 1s linear infinite;
+      animation: spin 3s linear infinite;
     }
     @keyframes spin {
       0% { transform: rotateY(0deg); }
@@ -132,7 +132,7 @@
     function startShuffle() {
       shuffling = true;
       shuffleBtn.textContent = 'Stop & Reveal';
-      intervalId = setInterval(shuffleCards, 100);
+      intervalId = setInterval(shuffleCards, 50); // ช้าลงจาก 100 เป็น 50ms
     }
 
     function stopShuffle() {
@@ -142,11 +142,10 @@
       const selectedCard = cards[currentIndex];
       tarotCard.textContent = `✨ ${selectedCard} ✨`;
 
-      // หมุนเสร็จแล้วเปลี่ยนภาพ
       setTimeout(() => {
         cardImage.classList.remove('rotating');
         cardImage.src = 'images/' + cardNameToFileName(selectedCard);
-      }, 1000);
+      }, 3000); // เปลี่ยนภาพหลังหมุน 3 วิ
     }
 
     shuffleBtn.addEventListener('click', () => {
