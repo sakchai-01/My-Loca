@@ -4,7 +4,63 @@
   <meta charset="UTF-8" />
   <title>My loca | By Champion!!</title>
   <style>
-    /* ใส่ CSS ตามเดิม */
+    @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap');
+    body {
+      background: radial-gradient(circle at center, #0f0f0f, #000);
+      color: #00ff00;
+      font-family: 'Share Tech Mono', monospace;
+      text-align: center;
+      padding-top: 120px;
+      user-select: none;
+    }
+    h1 {
+      font-size: 3.5rem;
+      letter-spacing: 0.25em;
+      text-shadow: 0 0 8px #00ff00, 0 0 16px #00ff00;
+      animation: flicker 3s infinite;
+    }
+    input, button {
+      font-family: 'Share Tech Mono', monospace;
+    }
+    #nameInput {
+      padding: 12px 20px;
+      font-size: 1.4rem;
+      width: 300px;
+      background: transparent;
+      border: 2px solid #00ff00;
+      color: #00ff00;
+      border-radius: 6px;
+      box-shadow: 0 0 8px #00ff00;
+      outline: none;
+      letter-spacing: 0.05em;
+    }
+    #nameInput::placeholder { color: #004400; }
+    #locateBtn {
+      margin-top: 1rem;
+      background: transparent;
+      border: 2px solid #00ff00;
+      padding: 18px 40px;
+      font-size: 1.8rem;
+      color: #00ff00;
+      cursor: not-allowed;
+      border-radius: 8px;
+      box-shadow: 0 0 8px #00ff00, inset 0 0 6px #00ff00;
+      transition: background 0.3s ease, color 0.3s ease;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+    }
+    #locateBtn.enabled {
+      cursor: pointer;
+    }
+    #locateBtn.enabled:hover {
+      background: #00ff00;
+      color: #000;
+      box-shadow: 0 0 16px #00ff00, inset 0 0 12px #00ff00;
+    }
+    @keyframes flicker {
+      0%, 19%, 21%, 23%, 25%, 54%, 56%, 100% { opacity: 1; }
+      20%, 22%, 24%, 55% { opacity: 0.5; }
+    }
   </style>
 </head>
 <body>
