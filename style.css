@@ -1,45 +1,556 @@
-body {
-  background-color: black;
-  color: #00ff00;
-  font-family: 'Courier New', monospace;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 100vh;
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;700&family=Playfair+Display:wght@700;900&display=swap');
+
+:root {
+  --primary: #d4af37;
+  /* Celestial Gold */
+  --secondary: #8e44ad;
+  /* Mystical Purple */
+  --bg-deep: #0f051d;
+  /* Deep Midnight */
+  --bg-card: rgba(25, 10, 50, 0.7);
+  --text-main: #f5f5f5;
+  --text-muted: #bda2e3;
+  --glow-gold: 0 0 15px rgba(212, 175, 55, 0.5);
+  --transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+}
+
+* {
   margin: 0;
+  padding: 0;
+  box-sizing: border-box;
 }
 
-.container {
+body {
+  background-color: var(--bg-deep);
+  background-image:
+    radial-gradient(circle at 20% 30%, rgba(142, 68, 173, 0.15) 0%, transparent 40%),
+    radial-gradient(circle at 80% 70%, rgba(212, 175, 55, 0.1) 0%, transparent 40%);
+  color: var(--text-main);
+  font-family: 'Montserrat', sans-serif;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  overflow-x: hidden;
+}
+
+/* Background Stars Animation */
+body::before {
+  content: "";
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: transparent url('https://www.transparenttextures.com/patterns/stardust.png');
+  opacity: 0.3;
+  z-index: -1;
+  animation: drift 100s linear infinite;
+}
+
+@keyframes drift {
+  from {
+    background-position: 0 0;
+  }
+
+  to {
+    background-position: 1000px 1000px;
+  }
+}
+
+h1,
+h2,
+h3 {
+  font-family: 'Playfair Display', serif;
+  letter-spacing: 0.05em;
+  color: var(--primary);
+  text-shadow: var(--glow-gold);
+}
+
+.glass-card {
+  background: var(--bg-card);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(212, 175, 55, 0.2);
+  border-radius: 24px;
+  padding: 3rem;
+  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.8);
+  max-width: 500px;
+  width: 90%;
   text-align: center;
-  animation: flicker 1.5s infinite alternate;
+  transition: var(--transition);
 }
 
-.title {
-  font-size: 24px;
-  margin-bottom: 20px;
+.glass-card:hover {
+  border-color: rgba(212, 175, 55, 0.4);
+  box-shadow: 0 12px 48px 0 rgba(0, 0, 0, 0.9), var(--glow-gold);
+}
+
+input[type="text"] {
+  width: 100%;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  padding: 1rem 1.5rem;
+  color: var(--text-main);
+  font-family: 'Montserrat', sans-serif;
+  font-size: 1.1rem;
+  margin-top: 1.5rem;
+  outline: none;
+  transition: var(--transition);
+}
+
+input[type="text"]:focus {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: var(--primary);
+  box-shadow: 0 0 10px rgba(212, 175, 55, 0.2);
 }
 
 button {
-  background-color: transparent;
-  border: 2px solid #00ff00;
-  color: #00ff00;
-  padding: 10px 30px;
-  font-size: 16px;
+  width: 100%;
+  margin-top: 2rem;
+  padding: 1.2rem;
+  border-radius: 12px;
+  border: none;
+  background: linear-gradient(135deg, var(--primary), #b8860b);
+  color: #000;
+  font-weight: 700;
+  font-size: 1.2rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
   cursor: pointer;
-  transition: 0.3s;
+  transition: var(--transition);
+  box-shadow: var(--glow-gold);
 }
 
-button:hover {
-  background-color: #00ff00;
-  color: black;
+button:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 5px 20px rgba(212, 175, 55, 0.6);
 }
 
-#output {
-  margin-top: 20px;
-  font-size: 14px;
+button:active:not(:disabled) {
+  transform: translateY(0);
 }
 
-@keyframes flicker {
-  0% { opacity: 1; }
-  100% { opacity: 0.95; }
+button:disabled {
+  background: #333;
+  color: #666;
+  cursor: not-allowed;
+  box-shadow: none;
+}
+
+.status-msg {
+  margin-top: 1.5rem;
+  font-size: 0.9rem;
+  color: var(--text-muted);
+  min-height: 1.5rem;
+}
+
+.mystic-ornament {
+  font-size: 2rem;
+  color: var(--primary);
+  margin-bottom: 1rem;
+  display: block;
+}
+
+/* Specific tarot styles */
+.tarot-reveal {
+  perspective: 1000px;
+}
+
+.card-container {
+  width: 240px;
+  height: 400px;
+  margin: 2rem auto;
+  position: relative;
+  transition: transform 0.6s;
+  transform-style: preserve-3d;
+}
+
+#cardImage {
+  width: 100%;
+  height: 100%;
+  border-radius: 15px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+  border: 2px solid var(--primary);
+}
+
+@keyframes pulse-gold {
+  0% {
+    box-shadow: 0 0 5px var(--primary);
+  }
+
+  50% {
+    box-shadow: 0 0 25px var(--primary);
+  }
+
+  100% {
+    box-shadow: 0 0 5px var(--primary);
+  }
+}
+
+.shuffling {
+  animation: pulse-gold 1s infinite alternate;
+}
+
+/* --- Mystical Mini-Games --- */
+
+.mystic-sanctuary {
+  margin-top: 4rem;
+  width: 100%;
+  max-width: 1000px;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 2rem;
+  padding-bottom: 5rem;
+}
+
+.game-card {
+  background: var(--bg-card);
+  border: 1px solid rgba(212, 175, 55, 0.1);
+  border-radius: 20px;
+  padding: 2rem;
+  text-align: center;
+  transition: var(--transition);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.game-card:hover {
+  transform: translateY(-5px);
+  border-color: rgba(212, 175, 55, 0.3);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+}
+
+.game-title {
+  font-family: 'Playfair Display', serif;
+  color: var(--primary);
+  font-size: 1.4rem;
+  margin-bottom: 1rem;
+}
+
+/* Crystal Ball Styles */
+.crystal-ball-container {
+  width: 120px;
+  height: 120px;
+  margin: 1rem auto;
+  position: relative;
+  cursor: pointer;
+}
+
+.crystal-ball {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  background: radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.2), rgba(142, 68, 173, 0.4), var(--bg-deep));
+  box-shadow:
+    inset 0 0 20px rgba(142, 68, 173, 0.5),
+    0 0 20px rgba(142, 68, 173, 0.3);
+  position: relative;
+  overflow: hidden;
+  transition: var(--transition);
+}
+
+.crystal-ball::after {
+  content: "";
+  position: absolute;
+  top: 10%;
+  left: 10%;
+  width: 30%;
+  height: 30%;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 50%;
+  filter: blur(5px);
+}
+
+.crystal-ball.glowing {
+  box-shadow: 0 0 50px rgba(142, 68, 173, 0.8), inset 0 0 30px rgba(255, 255, 255, 0.2);
+  transform: scale(1.05);
+}
+
+.ball-base {
+  width: 80px;
+  height: 20px;
+  background: linear-gradient(to right, #4a3411, var(--primary), #4a3411);
+  margin: -10px auto 0;
+  border-radius: 5px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
+}
+
+/* Ethereal Flip Styles */
+.coin-container {
+  perspective: 1000px;
+  width: 100px;
+  height: 100px;
+  margin: 1.5rem auto;
+  cursor: pointer;
+}
+
+.mystic-coin {
+  width: 100%;
+  height: 100%;
+  position: relative;
+  transform-style: preserve-3d;
+  transition: transform 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.mystic-coin div {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  backface-visibility: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 3rem;
+  border: 4px solid var(--primary);
+  background: var(--bg-deep);
+  box-shadow: var(--glow-gold);
+}
+
+.coin-front {
+  transform: rotateY(0deg);
+}
+
+.coin-back {
+  transform: rotateY(180deg);
+}
+
+.coin-flipping {
+  animation: coin-spin 0.5s linear infinite;
+}
+
+@keyframes coin-spin {
+  0% {
+    transform: rotateY(0deg);
+  }
+
+  100% {
+    transform: rotateY(360deg);
+  }
+}
+
+/* Lucky Numbers Styles */
+.lucky-container {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  margin: 1.5rem 0;
+}
+
+.lucky-number {
+  width: 45px;
+  height: 45px;
+  border: 1px solid var(--primary);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  font-size: 1.2rem;
+  color: var(--primary);
+  transition: var(--transition);
+  background: rgba(212, 175, 55, 0.05);
+}
+
+.lucky-number.reveal {
+  animation: pop-in 0.3s ease-out forwards;
+}
+
+@keyframes pop-in {
+  0% {
+    transform: scale(0);
+    opacity: 0;
+  }
+
+  80% {
+    transform: scale(1.2);
+  }
+
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+.game-btn {
+  background: transparent;
+  border: 1px solid var(--primary);
+  color: var(--primary);
+  padding: 0.6rem 1.2rem;
+  font-size: 0.9rem;
+  margin-top: 1rem;
+  width: auto;
+  border-radius: 30px;
+}
+
+.game-btn:hover {
+  background: var(--primary);
+  color: #000;
+}
+
+/* Aura Scanner Styles */
+.scanner-container {
+  width: 150px;
+  height: 150px;
+  border: 2px solid rgba(212, 175, 55, 0.2);
+  border-radius: 50%;
+  position: relative;
+  overflow: hidden;
+  margin: 1rem auto;
+}
+
+.scanner-ring {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 100%;
+  height: 100%;
+  border: 4px solid var(--primary);
+  border-radius: 50%;
+  clip-path: inset(0 0 50% 0);
+  opacity: 0;
+}
+
+.scanning .scanner-ring {
+  animation: scan-rotate 2s linear infinite, scan-move 2s ease-in-out infinite;
+  opacity: 0.8;
+}
+
+@keyframes scan-rotate {
+  from {
+    transform: translate(-50%, -50%) rotate(0deg);
+  }
+
+  to {
+    transform: translate(-50%, -50%) rotate(360deg);
+  }
+}
+
+@keyframes scan-move {
+
+  0%,
+  100% {
+    top: 30%;
+  }
+
+  50% {
+    top: 70%;
+  }
+}
+
+.aura-dot {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 60px;
+  height: 60px;
+  background: white;
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  filter: blur(20px);
+  opacity: 0;
+  transition: opacity 1s, background 1s;
+}
+
+.scanning .aura-dot {
+  opacity: 0.4;
+  animation: aura-pulse 1s infinite alternate;
+}
+
+@keyframes aura-pulse {
+  from {
+    transform: translate(-50%, -50%) scale(1);
+  }
+
+  to {
+    transform: translate(-50%, -50%) scale(1.3);
+  }
+}
+
+/* Zodiac Affinity Styles */
+.zodiac-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  width: 100%;
+  margin: 1rem 0;
+}
+
+.zodiac-select {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: var(--text-main);
+  padding: 0.5rem;
+  border-radius: 8px;
+  font-family: 'Montserrat', sans-serif;
+  outline: none;
+}
+
+.zodiac-select option {
+  background: var(--bg-deep);
+}
+
+.affinity-meter {
+  width: 100%;
+  height: 10px;
+  background: #333;
+  border-radius: 5px;
+  overflow: hidden;
+  margin-top: 0.5rem;
+}
+
+.affinity-fill {
+  height: 100%;
+  width: 0%;
+  background: linear-gradient(to right, var(--secondary), var(--primary));
+  transition: width 1.5s cubic-bezier(0.165, 0.84, 0.44, 1);
+}
+
+/* Pendulum Styles */
+.pendulum-area {
+  height: 180px;
+  width: 100%;
+  position: relative;
+  display: flex;
+  justify-content: center;
+}
+
+.pendulum-string {
+  width: 2px;
+  height: 120px;
+  background: var(--primary);
+  transform-origin: top center;
+  position: relative;
+  transition: transform 1s cubic-bezier(0.445, 0.05, 0.55, 0.95);
+}
+
+.pendulum-weight {
+  width: 30px;
+  height: 30px;
+  background: linear-gradient(135deg, var(--primary), #b8860b);
+  border-radius: 50% 0 50% 50%;
+  transform: rotate(45deg);
+  position: absolute;
+  bottom: -15px;
+  left: -14px;
+  box-shadow: var(--glow-gold);
+}
+
+.pendulum-swinging {
+  animation: swing 2s ease-in-out infinite alternate;
+}
+
+@keyframes swing {
+  from {
+    transform: rotate(-25deg);
+  }
+
+  to {
+    transform: rotate(25deg);
+  }
 }
